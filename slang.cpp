@@ -147,10 +147,11 @@ void Slang::GlobalInitialization() {
     LLVMInitializeARMAsmPrinter();
 
     // For x86 and x64
+#ifndef QCOM_LLVM
     LLVMInitializeX86TargetInfo();
     LLVMInitializeX86Target();
     LLVMInitializeX86AsmPrinter();
-
+#endif
     // Please refer to include/clang/Basic/LangOptions.h to setup
     // the options.
     LangOpts.RTTI = 0;  // Turn off the RTTI information support

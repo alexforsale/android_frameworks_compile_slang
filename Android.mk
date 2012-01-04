@@ -20,6 +20,11 @@ ifeq ($(TARGET_BUILD_APPS),)
 LOCAL_PATH := $(call my-dir)
 
 local_cflags_for_slang := -Wno-sign-promo -Wall -Wno-unused-parameter -Werror
+ifeq ($(BOARD_USE_QCOM_LLVM_CLANG_RS),true)
+	local_cflags_for_slang += -DQCOM_LLVM
+endif
+
+
 ifneq ($(TARGET_BUILD_VARIANT),eng)
 local_cflags_for_slang += -D__DISABLE_ASSERTS
 endif
@@ -44,12 +49,17 @@ static_libraries_needed_by_slang := \
 	libLLVMARMCodeGen \
 	libLLVMARMAsmPrinter \
 	libLLVMARMInfo \
-	libLLVMARMDesc \
+	libLLVMARMDesc
+
+ifneq ($(BOARD_USE_QCOM_LLVM_CLANG_RS),true)
+	static_libraries_needed_by_slang += \
 	libLLVMX86CodeGen \
 	libLLVMX86Info \
 	libLLVMX86Desc \
 	libLLVMX86AsmPrinter \
-	libLLVMX86Utils \
+	libLLVMX86Utils
+endif
+static_libraries_needed_by_slang += \
 	libLLVMAsmPrinter \
 	libLLVMSelectionDAG \
 	libLLVMCodeGen \
@@ -78,8 +88,10 @@ static_libraries_needed_by_slang := \
 include $(CLEAR_VARS)
 include $(CLEAR_TBLGEN_VARS)
 
-LLVM_ROOT_PATH := external/llvm
-CLANG_ROOT_PATH := external/clang
+LLVM_PATH ?= external/llvm
+CLANG_PATH ?= external/clang
+LLVM_ROOT_PATH := $(LLVM_PATH)
+CLANG_ROOT_PATH := $(CLANG_PATH)
 
 include $(CLANG_ROOT_PATH)/clang.mk
 
@@ -245,7 +257,11 @@ intermediates := $(call local-intermediates-dir)
 LOCAL_GENERATED_SOURCES += $(intermediates)/RSCCOptions.inc
 $(intermediates)/RSCCOptions.inc: $(LOCAL_PATH)/RSCCOptions.td $(CLANG_ROOT_PATH)/include/clang/Driver/OptParser.td $(CLANG_TBLGEN)
 	@echo "Building Renderscript compiler (llvm-rs-cc) Option tables with tblgen"
+ifeq ($(BOARD_USE_QCOM_LLVM_CLANG_RS),true)
+	$(call transform-host-clangtd-to-out,opt-parser-defs)
+else
 	$(call transform-host-clang-td-to-out,opt-parser-defs)
+endif
 
 include frameworks/compile/slang/RSSpec.mk
 include $(CLANG_HOST_BUILD_MK)
