@@ -88,10 +88,8 @@ static_libraries_needed_by_slang += \
 include $(CLEAR_VARS)
 include $(CLEAR_TBLGEN_VARS)
 
-LLVM_PATH ?= external/llvm
-CLANG_PATH ?= external/clang
-LLVM_ROOT_PATH := $(LLVM_PATH)
-CLANG_ROOT_PATH := $(CLANG_PATH)
+LLVM_ROOT_PATH := $(call get_llvm_root_path)
+CLANG_ROOT_PATH := $(call get_clang_root_path)
 
 include $(CLANG_ROOT_PATH)/clang.mk
 
