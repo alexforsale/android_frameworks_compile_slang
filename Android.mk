@@ -19,7 +19,7 @@ ifeq ($(TARGET_BUILD_APPS),)
 
 LOCAL_PATH := $(call my-dir)
 
-local_cflags_for_slang := -Wno-sign-promo -Wall -Wno-unused-parameter -Werror
+local_cflags_for_slang := -Wno-sign-promo -Wall -Wno-unused-parameter
 ifeq ($(BOARD_USE_QCOM_LLVM_CLANG_RS),true)
 	local_cflags_for_slang += -DQCOM_LLVM
 endif
